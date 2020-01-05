@@ -1,42 +1,42 @@
 # CorefQA: Coreference Resolution as Query-based Span Prediction
-本仓库包含论文[CorefQA: Coreference Resolution as Query-based Span Prediction](https://arxiv.org/abs/1911.01746)的代码以及数据和预训练模型的获取方式。
+This repo contains the code and data for the paper [CorefQA: Coreference Resolution as Query-based Span Prediction](https://arxiv.org/abs/1911.01746).
 
-## 实验准备
-* 安装python依赖：`pip install -r requirements.txt`
-* 准备训练数据：`python prepare_training_data.py`
-* 在`experiments.conf`调节实验所用的超参数。
+## Preparation
+* Install python requirements: `pip install -r requirements.txt`
+* Prepare training data: `python prepare_training_data.py`
+* Fine-tuning the hyper-parameters in `experiments.conf`
 
-## 模型训练
-1. 下载[Ontonotes 5.0](https://catalog.ldc.upenn.edu/LDC2013T19)数据集。
-2. 下载[SpanBERT](https://github.com/facebookresearch/SpanBERT)预训练模型。
-3. 运行`./setup_training.sh <ontonotes/path/ontonotes-release-5.0> $data_dir`进行数据预处理。
-4. 训练模型`GPU=0 python train.py <experiment>`，训练结果保存在`log_root`目录，可以用TensorBoard查看训练细节。
+## Training
+1. Download the [Ontonotes 5.0](https://catalog.ldc.upenn.edu/LDC2013T19) dataset.
+2. Download the [SpanBERT](https://github.com/facebookresearch/SpanBERT) pre-trained model.
+3. Run `./setup_training.sh <ontonotes/path/ontonotes-release-5.0> $data_dir` for data preparation.
+4. Training the model. `GPU=0 python train.py <experiment>`，Results are saved in the `log_root` directory. You can see the training details with `TensorBoard`.
 
-## 使用预训练好的模型
-使用如下命令下载预训练好的CorefQA模型。如果你想自己训练CorefQA模型，可以跳过这个步骤。
-`./download_pretrained.sh <model_name>` (e.g,: spanbert_base, spanbert_large) 将会下载在Ontonotes英文数据集上fine-tune过的CorefQA模型。 您可以将其用于评估 `evaluate.py` 和预测 `predict.py`。
+## Using Pre-trained Model
+Download the pre-trained `CorefQA` model using the following command. If you want to train the CorefQA model, you can skip this step.
+`./download_pretrained.sh <model_name>` (e.g,: spanbert_base, spanbert_large)  Will download the fine-tuned version of `CorefQA`. You can use it with `evaluate.py` and `predict.py`。
 
-## 模型评估
-运行 `GPU=0 python evaluate.py <experiment>`评估模型，可以通过在`experiments.conf`设置`eval_path`和`conll_eval_path`来选择在开发集还是在测试集上做评估。模型的评估效果如下：
+## Evaluation
+Run `GPU=0 python evaluate.py <experiment>` to evaluate the model. You can set `eval_path` and `conll_eval_path` in `experiments.conf` to choose the evaluation files：
 
 | Model          | F1 (%) |
 | -------------- |:------:|
 | CorefQA + SpanBERT-base  | 79.9  |
 | CorefQA + SpanBERT-large | 83.1   |
 
-## 模型预测
+## Prediction
 
-* 将待预测的文本存为txt文件，每行是一段待预测的文本。如果有`speaker`信息，把它用(`<speaker></speaker>`)符号包起来放在他所说的话的前面。例如：
+* Save the text for prediction in a txt file. If the text contains speaker name information, wrap the speaker with `<speaker></speaker>` and put it in front of its utterence. For example:
 ```text
 <speaker> Host </speaker> A traveling reporter now on leave and joins us to tell her story. Thank you for coming in to share this with us.
 ```
-* 运行 `GPU=0 python predict.py <experiment> <input_file> <output_file>`会把预测结果以jsonline的形式存入`<output_file>`中，每个instance的输出结果为list of clusters，每个cluster为list of mentions，每个mention为(text, (span_start, span_end))，例如：
+* run `GPU=0 python predict.py <experiment> <input_file> <output_file>` will save the prediction results in `<output_file>`, The prediction for each instance is a list of clusters，each cluster is a list of mentions. Each mention is (text, (span_start, span_end)). For example:
 ```python
 [[('A traveling reporter', (26, 46)), ('her', (81, 84)), ('you', (98, 101))]]
 ```
 
-## 引用
-如果您觉得我们的论文很有意思，请引用我们的论文 [Coreference Resolution as Query-based Span Prediction](https://arxiv.org/abs/1911.01746).
+## Citing
+If you think our paper is interesting, please cite [Coreference Resolution as Query-based Span Prediction](https://arxiv.org/abs/1911.01746).
 ```
 @article{wu2019coreference,
   title={Coreference Resolution as Query-based Span Prediction},
@@ -46,5 +46,5 @@
 }
 ```
 
-## 致谢
-我们在实现时参考了`https://github.com/mandarjoshi90/coref`，非常感谢！
+## Acknowledgement
+We borrow some code from `https://github.com/mandarjoshi90/coref`，Thanks to them!
